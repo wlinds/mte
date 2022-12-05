@@ -9,6 +9,9 @@ numpy = "*"
 mpmath = "*"
 scipy = "*"
 pandas = "*"
+plotly = "*"
+matplotlib = "*"
+lxml = "*"
 
 [dev-packages]
 ipykernel = "*"
