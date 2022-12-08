@@ -12,6 +12,8 @@ pandas = "*"
 plotly = "*"
 matplotlib = "*"
 lxml = "*"
+pylatex ="*"
+openpyxl = "*"
 
 [dev-packages]
 ipykernel = "*"
