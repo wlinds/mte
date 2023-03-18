@@ -15,6 +15,7 @@ lxml = "*"
 pylatex ="*"
 openpyxl = "*"
 mido = "*"
+nhanes = "*"
 
 [dev-packages]
 ipykernel = "*"
