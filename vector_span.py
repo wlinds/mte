@@ -141,6 +141,14 @@ def linear_combination():
         result_vector[1] += vector[1]
     return result_vector
 
+def draw_linear_combination(result_vector):
+    x, y = center_x + result_vector[0], center_y + result_vector[1]
+    text = f"Linear Combination of {', '.join(vector_name)}: ({result_vector[0]}, {-result_vector[1]})"
+    font = pygame.font.SysFont("Courier New", 14)
+    text_surface = font.render(text, True, (40, 255, 80))
+    text_rect = text_surface.get_rect(midbottom=(center_x, screen_y - 20))
+    screen.blit(text_surface, text_rect)
+    pygame.draw.line(screen, (40, 255, 80), (center_x, center_y), (x, y), 2)
 
 def main():
     is_drawing = False
@@ -150,12 +158,19 @@ def main():
         draw_ax()
         menu_bar.draw()
 
-        if len(vectors) == 0:
+        if len(vectors) > 1:
+                # Draw the linear combination box
+                result_vector = linear_combination()
+                draw_linear_combination(result_vector)
+
+        elif len(vectors) == 0:
             text_object = Text("Use your mouse to draw a vector!")
+            
         elif len(vectors) > 0:
             text_object.delete()
             if text_object != None: # make sure its None lol
                 text_object == None
+
         if text_object:
             text_object.render()
 
