@@ -16,19 +16,15 @@ vectors = []
 def add_vector(pos1, pos2):
     vector = [pos2[0] - pos1[0], pos2[1] - pos1[1]]
     vectors.append(vector)
-    print(vector)
 
 def draw_vectors():
-
     for vector in vectors:
-        pygame.draw.line(screen, (255, 255, 255), (center_x, center_y), (center_x + vector[0], center_y + vector[1]), 1)
-
+        x, y = center_x + vector[0], center_y + vector[1]
         text = f"({vector[0]}, {-vector[1]})"
         font = pygame.font.SysFont("Courier New", 14)
         text_surface = font.render(text, True, (255, 255, 255))
-        x, y = center_x + vector[0], center_y + vector[1]
-        pygame.draw.rect(screen, (0, 0, 0), (x - 5, y - 5, 10, 10))
         screen.blit(text_surface, (x, y))
+        pygame.draw.line(screen, (255, 255, 255), (center_x, center_y), (x, y), 1)
 
 while True:
     for event in pygame.event.get():
@@ -41,7 +37,6 @@ while True:
 
         elif event.type == pygame.MOUSEBUTTONUP:
             pos2 = pygame.mouse.get_pos()
-            
             add_vector(pos1, pos2)
 
     draw_vectors()
