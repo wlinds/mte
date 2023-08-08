@@ -9,6 +9,8 @@ class VectorPlotter:
     def __init__(self):
         self.v1 = np.array([1, 0, 0])
         self.v2 = np.array([0, 1, 0])
+        self.v3 = np.array([0, 0, 1])
+
         self.span_plane_visible = True
         self.span_3d_visible = False
         # self.ints_only = True #TODO
@@ -27,8 +29,8 @@ class VectorPlotter:
         self.ax_v1_input = plt.axes([0.085, 0.19, 0.25, 0.03])
         self.ax_v2_input = plt.axes([0.085, 0.14, 0.25, 0.03])
 
-        self.s_v2 = Slider(self.ax_v2, 'Scalar v2', -10.0, 10.0, valinit=10.0, valstep=1)
-        self.s_v1 = Slider(self.ax_v1, 'Scalar v1', -10.0, 10.0, valinit=10.0, valstep=1)
+        self.s_v2 = Slider(self.ax_v2, 'Scalar v2', -10.0, 10.0, valinit=0.0, valstep=1)
+        self.s_v1 = Slider(self.ax_v1, 'Scalar v1', -10.0, 10.0, valinit=0.0, valstep=1)
 
         self.v2_box = TextBox(self.ax_v1_input, 'v1:', initial=', '.join(map(str, self.v1)))
         self.v1_box = TextBox(self.ax_v2_input, 'v2:', initial=', '.join(map(str, self.v2)))
@@ -51,7 +53,7 @@ class VectorPlotter:
         plt.subplots_adjust(bottom=0.05)
 
         self.ax.view_init(elev=20, azim=-45)
-        #self.ax.mouse_init(rotate_btn=3)
+        self.ax.mouse_init(rotate_btn=1)
 
     def update(self, val):
         # Clear the previous plot
@@ -72,6 +74,14 @@ class VectorPlotter:
         self.ax.quiver(0, 0, 0, *new_v1, color=(1, 0, 0))
         self.ax.quiver(0, 0, 0, *new_v2, color=(0, 0, 1))
 
+        # Lines
+        self.ax.plot([0, 100], [0, 0], [0, 0], color=(1, 1, 1, 0.2), linewidth=1, linestyle='dotted')
+        self.ax.plot([0, 0], [0, 100], [0, 0], color=(1, 1, 1, 0.2), linewidth=1, linestyle='dotted')
+        self.ax.plot([0, 0], [0, 0], [0, 100], color=(1, 1, 1, 0.2), linewidth=1, linestyle='dotted')
+
+
+
+
         # Clear the previous annotations #TODO: doesn't fully clear v1 annotation
         for annotation in self.fig.texts:
             annotation.remove()
@@ -87,7 +97,7 @@ class VectorPlotter:
             self.ax.quiver(0, 0, 0, *combined, color='green', linestyle='dotted')
             linear_combination = new_v1 + new_v2
 
-        #TODO make class either round all to ints or none (see class self.ints_only)
+        #TODO make class either round all values to ints or round none? (see class self.ints_only)
         new_v1_rounded = np.round(new_v1, 1)
         new_v2_rounded = np.round(new_v2, 1)
 
@@ -121,7 +131,6 @@ class VectorPlotter:
                 xx, yy = np.meshgrid(np.linspace(-10, 10, 10), np.linspace(-10, 10, 10))
                 zz = (-normal[0] * xx - normal[1] * yy - d) * 1.0 / normal[2]
                 self.ax.plot_surface(xx, yy, zz, alpha=0.5, cmap='YlGn')
-
 
         if not self.span_3d_visible:
             self.ax.set_axis_off()
