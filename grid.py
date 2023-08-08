@@ -5,7 +5,7 @@ import math
 pygame.init()
 n = 17
 cell_size = 30
-movement_speed = 40
+movement_speed = 20
 
 screen_size = (n * cell_size, n * cell_size)
 screen = pygame.display.set_mode(screen_size)
@@ -15,10 +15,10 @@ text_color = (140, 140, 250)
 player_pos = np.array([n // 2, n // 2])
 player_color = (145, 120, 40)
 
+v1 = np.array([n - 1, n // 2])
+random_player_color = (255, 0, 0)
+
 arrow_color = (0, 255, 0)
-
-clock = pygame.time.Clock()
-
 def generate_random_unit_vector():
     angle = np.random.uniform(0, 2 * np.pi)  # Random angle in radians
     unit_vector = np.array([math.cos(angle), math.sin(angle)])
@@ -26,6 +26,8 @@ def generate_random_unit_vector():
 
 arrow_vector = None
 show_arrow = False
+
+clock = pygame.time.Clock()
 
 running = True
 while running:
@@ -38,15 +40,19 @@ while running:
             arrow_vector = generate_random_unit_vector()
             show_arrow = True
 
+    v1[0] -= 1
+    if v1[0] < 0:
+        v1[0] = n - 1
+
     # Key events
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and player_pos[0] > 0:
+    if keys[pygame.K_a] and player_pos[0] > 0:
         player_pos[0] -= 1
-    if keys[pygame.K_RIGHT] and player_pos[0] < n - 1:
+    if keys[pygame.K_d] and player_pos[0] < n - 1:
         player_pos[0] += 1
-    if keys[pygame.K_UP] and player_pos[1] > 0:
+    if keys[pygame.K_w] and player_pos[1] > 0:
         player_pos[1] -= 1
-    if keys[pygame.K_DOWN] and player_pos[1] < n - 1:
+    if keys[pygame.K_s] and player_pos[1] < n - 1:
         player_pos[1] += 1
 
     screen.fill((0, 22, 37))
@@ -66,6 +72,13 @@ while running:
     player_vector_text = font.render(f"({player_pos[0] - n // 2}, {n // 2 - player_pos[1]})", True, text_color)
     text_x = player_pos[0] * cell_size
     text_y = (player_pos[1] - 1/2) * cell_size
+    screen.blit(player_vector_text, (text_x, text_y))
+
+    # Draw v1
+    pygame.draw.rect(screen, random_player_color, (v1[0] * cell_size, v1[1] * cell_size, cell_size, cell_size))
+    player_vector_text = font.render(f"({v1[0] - n // 2}, {n // 2 - v1[1]})", True, text_color)
+    text_x = v1[0] * cell_size
+    text_y = (v1[1] - 1/2) * cell_size
     screen.blit(player_vector_text, (text_x, text_y))
 
     # Weird vector
