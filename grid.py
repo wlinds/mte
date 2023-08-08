@@ -3,9 +3,9 @@ import numpy as np
 import math
 
 pygame.init()
-n = 17
-cell_size = 30
-movement_speed = 20
+n = 100#270
+cell_size = 5
+movement_speed = 60
 
 screen_size = (n * cell_size, n * cell_size)
 console_height = 80
@@ -87,7 +87,9 @@ while running:
         v1_angle = np.arctan2(v1[1] - n // 2, v1[0] - n // 2)  # Calculate angle of v1
         arrow_angle = np.arctan2(arrow_vector[1], arrow_vector[0])  # Calculate angle of arrow_vector
         new_v1_angle = v1_angle + arrow_angle  # Update angle of v1
-        v1_magnitude = np.linalg.norm(v1 - (n // 2, n // 2))  # Calculate magnitude of v1
+        #v1_magnitude = np.linalg.norm(v1 - (n // 2, n // 2))  # Calculate magnitude of v1
+        v1_magnitude = np.linalg.norm(v1 - player_pos[0], player_pos[1])  # Calculate magnitude of v1
+        print(f"{v1_magnitude=}")
         add_console_message(f"v1 magnitude: {v1_magnitude:.2f}")
         v1 = np.array([n // 2 + v1_magnitude * np.cos(new_v1_angle), n // 2 + v1_magnitude * np.sin(new_v1_angle)])
 
@@ -124,7 +126,7 @@ while running:
         #arrow_start = (n // 2) * cell_size + cell_size // 2, (n // 2) * cell_size + cell_size // 2  # Origin
         arrow_start = player_pos[0] * cell_size, player_pos[1] * cell_size
 
-        arrow_end = arrow_start[0] + arrow_vector[0] * cell_size, arrow_start[1] - arrow_vector[1] * cell_size
+        arrow_end = v1[0] * cell_size, v1[1] * cell_size
         pygame.draw.line(screen, arrow_color, arrow_start, arrow_end, 2)
         pygame.draw.polygon(screen, arrow_color, [(arrow_end[0] - 8, arrow_end[1] + 8), arrow_end, (arrow_end[0] + 8, arrow_end[1] + 8)])
 
