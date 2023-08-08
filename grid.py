@@ -3,8 +3,8 @@ import numpy as np
 import math
 
 pygame.init()
-n = 100#270
-cell_size = 5
+n = 100 #27
+cell_size = 5 #30
 movement_speed = 60
 
 screen_size = (n * cell_size, n * cell_size)
@@ -22,7 +22,7 @@ player_color = (145, 120, 40)
 
 v1 = np.array([n - 1, n // 2])  # Initial position for the random player (right side)
 v1_speed = 1  # Speed of v1 movement
-random_player_color = (255, 0, 0)  # Color for the random player
+v1_color = (255, 0, 0)  # Color for the random player
 smooth_wave = [9.9781585, 0.6605701]
 
 arrow_color = (0, 255, 0)
@@ -44,7 +44,9 @@ clock = pygame.time.Clock()
 def add_console_message(message):
     console_messages.append(message)
     if len(console_messages) > 10:
-        console_messages.pop(0)  # Remove oldest message if there are more than 10 messages
+        console_messages.pop(0)
+
+display_intro_text = True
 
 running = True
 while running:
@@ -54,6 +56,7 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Left mouse button clicked
+            display_intro_text = False
             arrow_vector = generate_random_unit_vector()
             arrow_vector = smooth_wave
             show_arrow = True
@@ -95,6 +98,7 @@ while running:
 
     screen.fill((0, 22, 37))
 
+
     # Apply the transformation to the grid
     for row in range(n):
         for col in range(n):
@@ -114,7 +118,7 @@ while running:
     screen.blit(player_vector_text, (text_x, text_y))
 
     # Draw v1
-    pygame.draw.rect(screen, random_player_color, (v1[0] * cell_size, v1[1] * cell_size, cell_size, cell_size))
+    pygame.draw.rect(screen, v1_color, (v1[0] * cell_size, v1[1] * cell_size, cell_size, cell_size))
     player_vector_text = font.render(f"({v1[0] - n // 2}, {n // 2 - v1[1]})", True, text_color)
     text_x = v1[0] * cell_size
     text_y = (v1[1] - 1/2) * cell_size
@@ -135,6 +139,15 @@ while running:
     for i, message in enumerate(console_messages):
         console_text = console_font.render(message, True, console_text_color)
         screen.blit(console_text, (10, screen_size[1] + 10 + i * 20))
+
+    if display_intro_text:
+        intro_font = pygame.font.SysFont("Courier New", (n//5))
+        intro_text_rendered = intro_font.render("Move with WASD.", True, (255, 255, 255))
+        intro_text_2 = intro_font.render("Click anywhere to start.", True, (255, 255, 255))
+        intro_text_rect = intro_text_rendered.get_rect(center=(screen_size[0] // 2, screen_size[1] // 3))
+        intro_text_2_rect = intro_text_2.get_rect(center=(screen_size[0] // 2, screen_size[1] // 4))
+        screen.blit(intro_text_2, intro_text_2_rect)
+        screen.blit(intro_text_rendered, intro_text_rect)
 
     pygame.display.flip()
 
