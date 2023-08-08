@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, TextBox, Button
+import random
 
 plt.rcParams['text.color'] = (140 / 255, 140 / 255, 250 / 255)
 plt.rcParams['font.family'] = 'Courier New'
@@ -14,6 +15,8 @@ class VectorPlotter:
         self.span_plane_visible = True
         self.span_3d_visible = False
         # self.ints_only = True #TODO
+
+        self.random_plane_normal, self.random_plane_d = self.add_random_plane()
 
         self.fig = plt.figure()
         self.fig.set_facecolor((0 / 255, 22 / 255, 37 / 255)) # BG color fig
@@ -55,9 +58,24 @@ class VectorPlotter:
         self.ax.view_init(elev=20, azim=-45)
         self.ax.mouse_init(rotate_btn=1)
 
+    def add_random_plane(self):
+        # Generate a random normal vector for the plane
+        random_normal = np.random.rand(3)
+        random_normal /= np.linalg.norm(random_normal)
+
+        # Calculate d for the plane equation: ax + by + cz + d = 0
+        d = -np.dot(random_normal, self.v1)
+
+        return random_normal, d
+
     def update(self, val):
+
         # Clear the previous plot
         self.ax.clear()
+
+        xx, yy = np.meshgrid(np.linspace(-10, 10, 10), np.linspace(-10, 10, 10))
+        zz = (-self.random_plane_normal[0] * xx - self.random_plane_normal[1] * yy - self.random_plane_d) * 1.0 / self.random_plane_normal[2]
+        self.ax.plot_surface(xx, yy, zz, alpha=0.3, cmap='Purples')
 
         # Get current values of the sliders
         scalar_v1 = self.s_v1.val
@@ -158,6 +176,11 @@ class VectorPlotter:
 
     def toggle_span_3d(self, event):
         print("3d span toggled")
+        self.span_3d_visible = not self.span_3d_visible
+        self.update(None)
+
+    def toggle_random_plane(self, event):
+        print("random plane span toggled")
         self.span_3d_visible = not self.span_3d_visible
         self.update(None)
 
