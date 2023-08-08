@@ -76,17 +76,16 @@ while running:
 
     # Draw v1
     pygame.draw.rect(screen, random_player_color, (v1[0] * cell_size, v1[1] * cell_size, cell_size, cell_size))
-    player_vector_text = font.render(f"({v1[0] - n // 2}, {n // 2 - v1[1]})", True, text_color)
+    v1_text = font.render(f"({v1[0] - n // 2}, {n // 2 - v1[1]})", True, text_color)
     text_x = v1[0] * cell_size
     text_y = (v1[1] - 1/2) * cell_size
-    screen.blit(player_vector_text, (text_x, text_y))
+    screen.blit(v1_text, (text_x, text_y))
 
     # Weird vector
     if show_arrow and arrow_vector is not None:
-        arrow_start = (n // 2) * cell_size + cell_size // 2, (n // 2) * cell_size + cell_size // 2  # Origin
-        arrow_end = arrow_start[0] + arrow_vector[0] * cell_size, arrow_start[1] - arrow_vector[1] * cell_size
+        arrow_start = v1 * cell_size
+        arrow_end = player_pos * cell_size
         pygame.draw.line(screen, arrow_color, arrow_start, arrow_end, 2)
-        pygame.draw.polygon(screen, arrow_color, [(arrow_end[0] - 8, arrow_end[1] + 8), arrow_end, (arrow_end[0] + 8, arrow_end[1] + 8)])
 
     pygame.display.flip()
 
