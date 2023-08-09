@@ -14,16 +14,16 @@ def draw_ax():
     pygame.draw.line(screen, (140, 140, 140), (0, center_y), (screen_x, center_y), 1)
 
 vectors = []
-vector_name= []
+v_name = []
 
 def add_vector(pos1, pos2):
     vector = [pos2[0] - center_x, pos2[1] - center_y] # Always relative to origo
 
     var_name = chr(random.randint(65, 90)).lower()
-    while var_name in vector_name:
+    while var_name in v_name:
         var_name = chr(random.randint(65, 90)).lower()  # reroll if exist
 
-    vector_name.append(var_name)
+    v_name.append(var_name)
     vectors.append(vector)
     print(var_name, vector)
 
@@ -41,7 +41,7 @@ def draw_v_list():
     width, height = 100, 25
     y_offset = 20
     for index, vector in enumerate(vectors):
-        text = f"({vector_name[index]}: {vector[0]}, {-vector[1]})"
+        text = f"({v_name[index]}: {vector[0]}, {-vector[1]})"
         font = pygame.font.SysFont("Courier New", 15)
         text_surface = font.render(text, True, (140, 140, 250))
         screen.blit(text_surface, (x + 10, y + 10 + y_offset))
@@ -104,7 +104,7 @@ class MenuBar:
             pygame.draw.rect(screen, (40, 40, 40), dropdown_rect)
 
             dropdown_options = ["Remove all"]
-            dropdown_options.extend([f"Remove vector {vector_name[i]}" for i in range(0, len(vectors))])
+            dropdown_options.extend([f"Remove vector {v_name[i]}" for i in range(0, len(vectors))])
 
             for i, option in enumerate(dropdown_options):
                 option_rect = pygame.Rect(0, (i + 1) * self.menu_height, self.item_width, self.menu_height)
@@ -129,10 +129,11 @@ class MenuBar:
 
 def erase_all_vectors():
     vectors.clear()
+    v_name.clear()
 
 def delete_vector(selected_option):
     del vectors[selected_option-1]
-    del vector_name[selected_option-1]
+    del v_name[selected_option-1]
 
 def linear_combination():
     result_vector = [0, 0]
@@ -143,7 +144,7 @@ def linear_combination():
 
 def draw_linear_combination(result_vector):
     x, y = center_x + result_vector[0], center_y + result_vector[1]
-    text = f"Linear Combination of {', '.join(vector_name)}: ({result_vector[0]}, {-result_vector[1]})"
+    text = f"Linear Combination of {', '.join(v_name)}: ({result_vector[0]}, {-result_vector[1]})"
     font = pygame.font.SysFont("Courier New", 14)
     text_surface = font.render(text, True, (40, 255, 80))
     text_rect = text_surface.get_rect(midbottom=(center_x, screen_y - 20))
