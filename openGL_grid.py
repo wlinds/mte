@@ -26,6 +26,9 @@ grid_speed = 0.001
 rotation_angle = 0.0
 rotation_speed = 1.0
 
+rotation_angle_z = 0.0
+rotation_speed_z = 1.0
+
 dragging = False # Used for detecting mouse click (click and hold to change grid_speed variable)
 drag_start_y = 0
 
@@ -45,6 +48,11 @@ while True:
         rotation_angle += rotation_speed  # Counter-clockwise rotation
     if keys[pygame.K_e]:
         rotation_angle -= rotation_speed  # Clockwise rotation
+
+    if keys[pygame.K_w]:
+        rotation_angle_z += rotation_speed  # Counter-clockwise rotation
+    if keys[pygame.K_s]:
+        rotation_angle_z -= rotation_speed  # Clockwise rotation
     
     if dragging:
         mouse_y = pygame.mouse.get_pos()[1]
@@ -54,6 +62,12 @@ while True:
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # Clear buffers at beginning of each frame
     glPushMatrix()
     glRotatef(rotation_angle, 0.0, 0.0, 1.0)
+    glRotatef(rotation_angle_z, 0.0, 1.0, 0.0)
+    glTranslatef(0, 0, grid_speed)
+    grid_position_z += grid_speed
+
+
+    glRotatef(rotation_angle, 0.0, 1.0, 0.0)
     glTranslatef(0, 0, grid_speed)
     grid_position_z += grid_speed
 
@@ -74,10 +88,11 @@ while True:
     glEnd()
 
     glPopMatrix() # Pop (glPushMatrix) before rotating (otherwise crashes with error 1283, b'stack overflow' (?))
+    
 
     # Render text (zoom level and rotation)
     text_position = (-4.5, -4.5, -5)
-    zoom_text = f"Zoom Level: {grid_position_z:.2f} | Rotation Level: {rotation_angle:.2f} | Rotation Speed: {rotation_speed:.2f}"
+    zoom_text = f"(Mouse) Zoom Level: {grid_position_z:.2f} | (Q/R) Rotation Level: {rotation_angle:.2f}"
     glColor3f(1.0, 1.0, 1.0)
     draw_text(text_position, zoom_text)
 
