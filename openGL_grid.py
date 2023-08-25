@@ -194,7 +194,7 @@ while True:
 
     rotation_text = display_rotation_combination()
     text_position = (-6, -4.5, -5)
-    bottom_text = f"Zoom Level (Mouse): {grid_position_z:.2f} | Rotation (WASD): {rotation_text}"
+    bottom_text = f"Zoom Level (Mouse): {grid_position_z:.2f} | Rotation (WASD+QE): {rotation_text}"
     glColor3f(1.0, 1.0, 1.0)
     draw_text(text_position, bottom_text)
 
