@@ -12,21 +12,15 @@ screen = pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 gluPerspective(50, (display[0] / display[1]), 0.1, 50.0) # Field of View, Aspect Ratio, zNear & zFar (both clipping distace)
 glTranslatef(0.0, 0.0, -5) # Move grid on negative z axis
 
+grid_size = 16 # determines plane size along x and y axis (size 4 will create an 8x8 grid)
 grid_spacing = 0.5
 grid_position_z = 0.0
-grid_speed = 0.0
+grid_speed = 0.0 # This isn't really grid speed anymore, it's z level of the cube
 
-base_rotation_speed = 1.0
-slow_rotation_factor = 0.5 # Currently not implemented, but could be used to lower rotation speed
-
-rotation_angle_x = 0.0
 rotation_speed = 1.0
-
+rotation_angle_x = 0.0
 rotation_angle_z = 0.0
-rotation_speed_z = 1.0
-
 rotation_angle_y = 0.0
-rotation_speed_y = 1.0
 
 dragging = False # Used for detecting mouse click (click and hold to change grid_speed variable) #TODO: Change keybind?
 drag_start_y = 0
@@ -55,7 +49,6 @@ def follow_text(position, text, color=(1.0, 1.0, 1.0)):
 
 
 def draw_stupid_cube(position, size):
-
     # Stupid cube vertices
     u = size * 0.5
     vertices = [
@@ -85,6 +78,21 @@ def draw_stupid_cube(position, size):
             vertex = vertices[vertex_index]
             glVertex3fv([vertex[0] + position[0], vertex[1] + position[1], vertex[2] + position[2]])
     glEnd()
+
+global cube_loc # testing with global for now, replace with class later
+cube_loc = (0.25, 0.25, 0.25) # defalut 
+
+def move_cube_on_grid(direction):
+    global cube_loc
+    step = grid_spacing
+    if direction == "left":
+        cube_loc = (cube_loc[0] - step, cube_loc[1], cube_loc[2])
+    elif direction == "right":
+        cube_loc = (cube_loc[0] + step, cube_loc[1], cube_loc[2])
+    elif direction == "up":
+        cube_loc = (cube_loc[0], cube_loc[1] + step, cube_loc[2])
+    elif direction == "down":
+        cube_loc = (cube_loc[0], cube_loc[1] - step, cube_loc[2])
 
 def display_rotation_combination():
     #TODO: Simplified as rotation matrix, maybe?
@@ -116,6 +124,10 @@ key_names = {
     pygame.K_a: "A",
     pygame.K_s: "S",
     pygame.K_w: "W",
+    pygame.K_LEFT: "left",
+    pygame.K_RIGHT: "right",
+    pygame.K_UP: "up",
+    pygame.K_DOWN: "down",
 }
 
 while True:
@@ -149,6 +161,16 @@ while True:
     if keys[pygame.K_w]:
         rotation_angle_y -= rotation_speed  # Clockwise rotation
     
+    # Move cube along grid
+    if keys[pygame.K_LEFT]:
+        move_cube_on_grid("left")
+    if keys[pygame.K_RIGHT]:
+        move_cube_on_grid("right")
+    if keys[pygame.K_UP]:
+        move_cube_on_grid("up")
+    if keys[pygame.K_DOWN]:
+        move_cube_on_grid("down")
+    
     if dragging:
         mouse_y = pygame.mouse.get_pos()[1]
         scroll = drag_start_y - mouse_y
@@ -166,10 +188,9 @@ while True:
     # Define wireframe grid
     glBegin(GL_LINES)
     glColor3f(0.0, 0.5, 0.5)
+
     spacing = grid_spacing
-    
-    # Creates lines along the x and y axis (size 4 will create an 8x8 grid)
-    size = 16
+    size = grid_size
     
     for i in range(-size, size + 1):
         glVertex3f(i * spacing, size * spacing, grid_position_z)
@@ -181,7 +202,6 @@ while True:
 
 
     cube_size = grid_spacing
-    cube_loc = (0.25, 0.25, 0.25)
     draw_stupid_cube(cube_loc, cube_size)
 
     follow_text((cube_loc[0] - 0.3, cube_loc[1], cube_loc[2]), "Stupid cube #1")
