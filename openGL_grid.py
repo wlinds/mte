@@ -12,6 +12,7 @@ screen = pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 gluPerspective(50, (display[0] / display[1]), 0.1, 50.0) # Field of View, Aspect Ratio, zNear & zFar (both clipping distace)
 glTranslatef(0.0, 0.0, -5) # Move grid on negative z axis
 
+grid_spacing = 0.5
 grid_position_z = 0.0
 grid_speed = 0.0
 
@@ -30,6 +31,7 @@ rotation_speed_y = 1.0
 dragging = False # Used for detecting mouse click (click and hold to change grid_speed variable) #TODO: Change keybind?
 drag_start_y = 0
 
+# Draw semi-static text
 def draw_text(position, text):
     glPushMatrix()
     glTranslatef(*position)
@@ -37,6 +39,52 @@ def draw_text(position, text):
     for char in text:
         glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(char))
     glPopMatrix()
+
+# Follow rotation (for cube and other objects)
+def follow_text(position, text, color=(1.0, 1.0, 1.0)):
+    glPushMatrix()
+    glTranslatef(*position)
+    glRotatef(rotation_angle_x, 1, 0, 0)
+    glRotatef(rotation_angle_y, 0, 1, 0)
+    glRotatef(rotation_angle_z, 0, 0, 1)
+    glColor3f(*color)  # Set text color
+    glRasterPos3f(0, 0, 0)
+    for char in text:
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(char))
+    glPopMatrix()
+
+
+def draw_stupid_cube(position, size):
+
+    # Stupid cube vertices
+    u = size * 0.5
+    vertices = [
+        [ u,  u,  u],
+        [-u,  u,  u],
+        [-u, -u,  u],
+        [ u, -u,  u],
+        [ u,  u, -u],
+        [-u,  u, -u],
+        [-u, -u, -u],
+        [ u, -u, -u]
+    ]
+    
+    # Stupid cube corner connections
+    faces = [
+        [0, 1, 2, 3],
+        [3, 2, 6, 7],
+        [7, 6, 5, 4],
+        [4, 5, 1, 0],
+        [0, 3, 7, 4],
+        [1, 5, 6, 2]
+    ]
+
+    glBegin(GL_QUADS)
+    for stupid_face in faces:
+        for vertex_index in stupid_face:
+            vertex = vertices[vertex_index]
+            glVertex3fv([vertex[0] + position[0], vertex[1] + position[1], vertex[2] + position[2]])
+    glEnd()
 
 def display_rotation_combination():
     #TODO: Simplified as rotation matrix, maybe?
@@ -118,10 +166,10 @@ while True:
     # Define wireframe grid
     glBegin(GL_LINES)
     glColor3f(0.0, 0.5, 0.5)
-    spacing = 0.5
+    spacing = grid_spacing
     
     # Creates lines along the x and y axis (size 4 will create an 8x8 grid)
-    size = 8
+    size = 16
     
     for i in range(-size, size + 1):
         glVertex3f(i * spacing, size * spacing, grid_position_z)
@@ -130,6 +178,13 @@ while True:
         glVertex3f(-size * spacing, i * spacing, grid_position_z)
 
     glEnd()
+
+
+    cube_size = grid_spacing
+    cube_loc = (0.25, 0.25, 0.25)
+    draw_stupid_cube(cube_loc, cube_size)
+
+    follow_text((cube_loc[0] - 0.3, cube_loc[1], cube_loc[2]), "Stupid cube #1")
 
     glPopMatrix() # Pop (glPushMatrix) before rotating (otherwise crashes with error 1283, b'stack overflow' (?))
 
@@ -142,6 +197,8 @@ while True:
     bottom_text = f"Zoom Level (Mouse): {grid_position_z:.2f} | Rotation (WASD): {rotation_text}"
     glColor3f(1.0, 1.0, 1.0)
     draw_text(text_position, bottom_text)
+
+    # Key currently pressed
     draw_text((-2,1.5,1.5), f"{pressed_keys_text}")
 
     pygame.display.flip()
