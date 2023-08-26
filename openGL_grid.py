@@ -24,10 +24,16 @@ class Main:
         self.rotation_angle_z = 0.0
         self.rotation_angle_y = 0.0
 
-        self.dragging = False # Detecting mouse click (click and hold to change camera_speed_z) #TODO: Change keybind?
+        self.dragging = False # TODO: This needs to be reworked entirely, as it affects all objects. Maybe with subclasses?
         self.drag_start_y = 0
 
         self.cube_loc = (0.25, 0.25, 0.25)
+
+        # Testing second cube
+        self.second_cube_loc = (0.25, 0.25, 0.25)
+        self.second_cube_z = 0.25  # Store the z position separately
+        self.second_cube_speed = 0.01
+        self.second_cube_direction = "right"
 
         # Dict mapping used only for displaying player input
         self.key_names = {
@@ -94,6 +100,26 @@ class Main:
             self.cube_loc = (self.cube_loc[0], self.cube_loc[1] + step, self.cube_loc[2])
         elif direction == "down":
             self.cube_loc = (self.cube_loc[0], self.cube_loc[1] - step, self.cube_loc[2])
+
+    def move_second_cube(self):
+        # Stupid movement
+        step = self.grid_spacing
+        if self.second_cube_direction == "right":
+            self.second_cube_loc = (self.second_cube_loc[0] + step, self.second_cube_loc[1], self.second_cube_z)
+            if self.second_cube_loc[0] >= self.grid_size * self.grid_spacing:
+                self.second_cube_direction = "down"
+        elif self.second_cube_direction == "down":
+            self.second_cube_loc = (self.second_cube_loc[0], self.second_cube_loc[1] - step, self.second_cube_z)
+            if self.second_cube_loc[1] <= -self.grid_size * self.grid_spacing:
+                self.second_cube_direction = "left"
+        elif self.second_cube_direction == "left":
+            self.second_cube_loc = (self.second_cube_loc[0] - step, self.second_cube_loc[1], self.second_cube_z)
+            if self.second_cube_loc[0] <= -self.grid_size * self.grid_spacing:
+                self.second_cube_direction = "up"
+        elif self.second_cube_direction == "up":
+            self.second_cube_loc = (self.second_cube_loc[0], self.second_cube_loc[1] + step, self.second_cube_z)
+            if self.second_cube_loc[1] >= self.grid_size * self.grid_spacing:
+                self.second_cube_direction = "right"
 
     def display_rotation_combination(self):
         #TODO: Simplified as rotation matrix, maybe?
@@ -177,6 +203,13 @@ class Main:
             self.draw_stupid_cube(self.cube_loc, cube_size)
 
             self.follow_text((self.cube_loc[0] - 0.3, self.cube_loc[1], self.cube_loc[2]), "Stupid cube #1")
+
+            # Second cube
+            cube_size = self.grid_spacing
+            self.draw_stupid_cube(self.second_cube_loc, cube_size)
+
+            self.move_second_cube()
+            self.follow_text((self.second_cube_loc[0] - 0.3, self.second_cube_loc[1], self.second_cube_loc[2]), "Stupid cube #2")
 
             glPopMatrix() # Pop (glPushMatrix) before rotating (otherwise crashes with error 1283, b'stack overflow' (?))
 
